@@ -37,196 +37,6 @@ Alice 先幫 Bob 評估他的 TDEE, 也將是每日消耗的熱量-- 那可以�
 * 循序漸進-- 劇中的人物 Bob 從高中，頹廢到發憤圖強的故事，我們拆解成10 個小單元，每一個單元大家會看到一點需求，一點設計，一點測試，循序漸進的了解整個系統。
 * 故事產生器-- 我們創建了一個簡單的故事產生類別，透過它來描述 Bob 的故事。
 
-
-## Story code
-```python
-    Story.cover('>>> FROM OVERWEIGHT TO OVERACHIVER <<< ')
-
-    # chapter I
-    Story.chapterHead('ABC 三個好朋友')
-
-    Story.sectionHead('Alice, Bob, Charlie 是高中同學的好朋友，他們都用有很不錯的體態。')
-    bob = Student('Bob', 1.72, 60,  bodyFat=0.15, age=18, major='Computer')
-    charlie = Student('Charlie', 1.80, 72, age=18, bodyFat=0.15, major='Civil')
-    alice = Person('Alice', 1.65, 45, age=18, bodyFat=0.12)
-
-    for p in [bob, charlie, alice]:
-        print(p)
-    Story.sectionEnd()
-
-    Story.sectionHead('他們成立了 Fit ABC 社團，致力推廣健康觀念')
-    fit = HighShoolClub('Fit ABC')
-    bob.join(fit)
-    fit.add(charlie)
-    fit.add(alice)
-    fit.show()
-    for p in [bob, charlie, alice]:
-        print(p.getLifeInfo())
-    Story.note('社團的平均 BMI 保持得很好')
-    print(fit.getBmiAvgInfo())
-    Story.sectionEnd()
-    Story.chapterEnd()
-
-    # chapter II
-    Story.chapterHead('踏出校園')
-    Story.sectionHead('出社會後，大家的體態與工作都有所變化')
-
-    Story.note('Charlie成了教練，在一家健身中心工作')
-    Story.note('他的身高變高，體脂肪和體重還下降了')
-    charlie = Coach(charlie, expertise='舉重')
-    charlie.updateInbody(height=charlie.height + 0.05,
-                         weight=charlie.weight-5,
-                         bodyFat=charlie.bodyFat-0.03)
-    moveX = Company('MoveX', Currency(100000))
-    charlie.workFor(moveX)
-
-    print(charlie)
-
-    Story.note('Bob 有點宅，也不太不健康')
-    bob.updateInbody(weight=bob.weight+20,
-                     bodyFat=bob.bodyFat*1.3)
-    print(bob)
-
-    # chapter III
-    Story.chapterHead('工作賺錢')
-
-    Story.sectionHead('Bob開了銀行帳戶，雖然錢不多')
-    bob.bankAccount = BankAccount(title='Bob', balance=Currency(10000))
-    print(bob.getBalanceInfo())
-    Story.note('也把多年的美金存到戶頭')
-    bob.bankAccount.deposit(Currency(10000, "USD"))
-    print(bob.getBalanceInfo())
-
-    Story.sectionHead('成功的找到工作')
-    successTech = Company(title='成科股份有限公司', asset=Currency(1000000))
-    successTech.show()
-    successTech.hire(bob)
-    # bob.workFor(successTech)
-    Story.note(f'薪水 {Currency(50000)}')
-    print(bob.getLifeInfo())
-    successTech.paySalary(bob, Currency(50000, 'NTD'))
-    Story.note('公司最近賺了不少錢')
-    successTech.earnMoney(Currency(1500000))
-    print(bob.getBalanceInfo())
-    successTech.show()
-
-    Story.chapterEnd()
-
-    # Chapter IV
-    Story.chapterHead('公司的補助')
-
-    Story.note('雖然業績不錯，但 Bob 的身體不好')
-    Story.note('公司鼓勵 Bob 和其他同仁大家都去健身房運動')
-    strongLife = Gym('StrongLife',
-                     asset=Currency(200000),
-                     memberFee=Currency(600))
-    print(strongLife.getGymInfo())
-    try:
-        bob.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    Story.note('Bob 參加了健身房')
-    print(bob.getLifeInfo())
-
-    Story.sectionHead('Jack 報名了健身房，但錢不夠')
-    jack = Person('Jack', 1.72, 100)
-    jack.bankAccount = BankAccount(jack.name, balance=Currency(10))
-    successTech.hire(jack)
-    successTech.paySalary(jack, Currency(10))
-    try:
-        jack.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    finally:
-        print(jack.getBalanceInfo())
-
-    Story.sectionHead('公司補助健身'+str(Currency(500)))
-    successTech.subsidize(jack, Currency(500))
-    try:
-        jack.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    print('Jack 也加入健身了')
-    print(jack.getLifeInfo())
-
-    # Chapter V
-    Story.chapterHead('開始健身')
-    Story.note('健身前的 Inbody！')
-    print(bob.getInbodyInfo())
-
-    Story.note('Charlie 轉職到 StrongLife, 擔任 Bob 的教練')
-    bob.workout(Workout.FLYWHEEL, 60, '2023/10/03', 4)
-    bob.workout(Workout.AEROBIC_EX, 60, '2023/10/10', 1)
-    bob.workout(Workout.SWIM, 60, '2023/10/11', 3)
-    bob.workout(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
-    bob.workout(Workout.YOGA, 60, '2023/10/20', 10)
-    bob.showWorkoutLog()
-
-    Story.note('健身後體重降低了！')
-    print(bob.getInbodyInfo())
-
-    Story.chapterEnd()
-
-    # Chapter VI
-    Story.chapterHead('減重計畫')
-
-    Story.sectionHead('現況評估')
-    Story.note('Alice 擔任 Bob 的營養師')
-    Story.note('還沒有減重計劃前 Bob 的狀況')
-    Story.note('他的活動層級被評斷為坐立，這也帶表他每天消耗的熱量很低')
-
-    act = ActivityLevel.SEDENTARY
-    print(getTDEEEstInfo(bob, act))
-
-    Story.note('他每天攝取的熱量大約 3000 大卡，如果這樣持續 30 天')
-    dailyCalorie, days = 3000, 30
-    Story.note('他的減重是負的！！（也就是體重持續增加')
-    print(getWeightLossEstInfo(bob,
-                               act,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第一階段減重')
-    Story.note('活動力提升一點，少吃一點')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    dailyCalorie, days = 2500, 30
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.MODERATELY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第二階段減重')
-    Story.note('活動力再提升，吃得更少，持續更久')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    dailyCalorie, days = 2000, 100
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.VERY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第三階段減重-- 保持')
-    Story.note('先看看目前的體重下，TDEE是多少')
-    print(getTDEEEstInfo(bob, act))
-
-    Story.note('活動力再提升，吃得和消耗的差不多，體重就可以維持')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    bmr = Inbody.estimatedBMR(bob.weight, bob.bodyFat)
-    tdee = Inbody.estimatedTDEE(bmr, act)
-    dailyCalorie, days = tdee, 100
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.MODERATELY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    # Chapter VII
-    Story.chapterHead('發達之路')
-    successTech.earnMoney(Currency(100000000))
-    successTech.paySalary(bob, Currency(500000))
-    successTech.show()
-    print(bob.getLifeInfo())
-    print(bob.getInbodyInfo())
-```
-
 ### Story by story code
 
 ```
@@ -252,44 +62,44 @@ Bob 的健身紀錄：
 ... 健身後體重降低了！
 👤Bob Inbody: 1.72m, 78.54kg, BMI=26.55, bodyFat=0.2, inbody=過重
 
-## Unit09 健身歷程
+## Unit08 健身減重
+
+* 不同的運動項目的 MET 不同，所謂的 MET 是指人類在活動時相對於靜止不動的消耗量，MET 越高表示期消耗的熱量約高，其減重效果越高。
+*  消耗的熱量與體重、運動項目及時程有關 (=該運動 MET * 體重 * 小時數)
+*  每消耗 7700 大卡，約可減重 1kg
 
 #### Design
 
 ```plantuml
-Person o->"1" ExerciseLog
-ExerciseLog o->"*" ExerciseRec
-
-class ExerciseRec {
-    - ex: Exercise
-    - person: Person
-    - duration: min
-    - date: Date
-    - caloryBurn: float
-    - weightLost: float
+class Workout {
+    - name 
+    + {static} calBurned()
+    + {static} weightLoss()
 }
 
-class Person {
-    - exerciseLog: list(ExerciseRec) 
-    + workout(Workout, durationMins, date, durationDays)
-    + showExLog()
-}
+Enum <|-- Workout
 ```
 
 #### Test
 
+
 ```python
-    # 健身：記錄健身
-    def test_workout_rec(self):
+def test_workout(self):
+        # swim 運動消耗熱量, 並減重
+        swim = Workout.SWIM
+        cal = swim.caloriesBurn(weight=100, duration=60)
+        print (f'{swim.value[0]}一小時約耗{cal}大卡')
+        self.assertEqual(cal, swim.value[1]*100*60/60)
+
+        loss = swim.weightLoss(100, 60, 30)
+        print (f'每天{swim.value[0]}一小時，一個月可以減重{loss}kg')
+        self.assertEqual(3.9, loss)
+
         # bob 到健身房游泳
         bob = Person(name='Bob', height=1.72, weight=100, age=40)
         bob_bAccount = BankAccount(bob.name, balance=Currency(0))
         bob.setBankAccount(bob_bAccount)
         bob.registerGym(Gym('StrongLife', Currency(0)))
-        bob.workOut(Workout.FLYWHEEL, 60, '2023/10/03', 4)
-        bob.workOut(Workout.AEROBIC_EX, 60, '2023/10/10', 1)
-        bob.workOut(Workout.SWIM, 60, '2023/10/11', 3)
-        bob.workOut(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
-        bob.workOut(Workout.YOGA, 60, '2023/10/20', 10)
-        bob.showWorkoutLog()
+        bob.workOut(swim, 60, '2023/10/10', 30)
+        self.assertEqual(bob.weight, 100-loss)
 ```

@@ -192,7 +192,6 @@ class TestCompanyGym(unittest.TestCase):
         self.bob.registerGym(self.strongLife)
         self.assertTrue(self.strongLife.isMember(self.bob))
 
-    # @unittest.skip
     def test_update_memberfee(self):
         self.strongLife.memberFee = Currency(600)
         self.assertEqual(self.strongLife.memberFee, Currency(600))
@@ -201,7 +200,6 @@ class TestCompanyGym(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             self.strongLife.memberFee(Currency(1600))
 
-    # @unittest.skip
     def test_register_gym_implies_join(self):
         ''' if a person register a gym, 
             it imples it join the gym group
@@ -278,9 +276,6 @@ class TestCoach(unittest.TestCase):
         print(annie.getLifeInfo())
         self.assertEqual(annie.getBalance(), Currency(10000))
 
-# @unittest.skip
-
-
 class TestWorkout(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -304,23 +299,6 @@ class TestWorkout(unittest.TestCase):
         # bob 到健身房游泳
         self.bob.workout(self.swim, 60, '2023/10/10', 30)
         self.assertEqual(self.bob.weight, 100-loss)
-
-@unittest.skip
-
-class TestWorkoutRec(unittest.TestCase):
-    # 健身：記錄健身
-    def test_Workout_rec(self):
-        # bob 到健身房游泳
-        bob = Person(name='Bob', height=1.72, weight=100, age=40)
-        bob_bAccount = BankAccount(bob.name, balance=Currency(0))
-        bob.bankAccount = bob_bAccount
-        bob.registerGym(Gym('StrongLife', Currency(0)))
-        bob.workout(Workout.FLYWHEEL, 60, '2023/10/03', 4)
-        bob.workout(Workout.AEROBIC_EX, 60, '2023/10/10', 1)
-        bob.workout(Workout.SWIM, 60, '2023/10/11', 3)
-        bob.workout(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
-        bob.workout(Workout.YOGA, 60, '2023/10/20', 10)
-        bob.showWorkoutLog()
 
 if __name__ == '__main__':
     unittest.main()

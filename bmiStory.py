@@ -149,7 +149,6 @@ class Person:
         self._groups = []
         self._company = None
         self._salary = None
-        self._workoutLog = []
         self.updateInbody(height, weight, bodyFat)
 
     @property
@@ -285,11 +284,6 @@ class Person:
         loss = workout.weightLoss(self._weight, duration, times)
         self.updateInbody(weight=self._weight - loss)
 
-        # 紀錄健身紀錄
-        workoutRec = WorkoutRec(self, workout, date,
-                                self._gym, duration=duration, times=times)
-        self._workoutLog.append(workoutRec)
-
     def getLifeInfo(self) -> str:
         ''' 回傳此人的一般生活資訊, 包含參與的社團，公司，健身房與帳戶存款 '''
 
@@ -313,15 +307,6 @@ class Person:
             balance = '目前沒有銀行帳戶'
 
         return f'👤{self._name}: ' + ';'.join([g, w, gym, balance])
-
-    def showWorkoutLog(self):
-        ''' 印出此人的健身紀錄 '''
-
-        print(f"{self.name} 的健身紀錄：")
-        print("------------")
-        for log in self._workoutLog:
-            print(log)
-        print("------------")
 
     def __str__(self):
         ''' 回傳 inbody 和 life 相關的資訊 '''
@@ -639,33 +624,6 @@ class Coach(Person):
                 self._inbody = Inbody.FIT
 
 
-
-
-class WorkoutRec:
-    """ 封裝一筆健身紀錄，包含人事時地物
-        
-    - 什麼人進行的健身 (person)
-    - 進行什麼重訓 (workout)
-    - 什麼時間 (date)
-    - 在哪一個健身房 (gym)
-    - 一次進行了多久 (duration)
-    - 進行了多少次 (times)
-    """
-
-    def __init__(self, person, workout, date, gym, duration, times):
-        self._person = person
-        self._workout = workout
-        self._gym = gym
-        self._duration = duration
-        self._date = date
-        self._times = times
-
-    def __str__(self):
-        content = f"👤{self._person.name}於{self._date}, 在🏋️‍♂️{self._gym.title} 進行{self._workout}訓練{self._times}次，每次{self._duration}分鐘。"
-
-        return content
-
-
 class Story:
     """ 定義故事每章節分段及裝飾的形式
     """
@@ -833,34 +791,12 @@ def main():
     bob.workout(Workout.SWIM, 60, '2023/10/11', 3)
     bob.workout(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
     bob.workout(Workout.YOGA, 60, '2023/10/20', 10)
-    bob.showWorkoutLog()
 
     Story.note('健身後體重降低了！')
     print(bob.getInbodyInfo())
 
     Story.chapterEnd()
-
-def printDocstring():
-    cls_list = [Person, Currency, BankAccount, Student, HGroup, HighShoolClub, Company, Gym, Coach, WorkoutRec]
-
-    for cls in cls_list:
-        class_docstring = cls.__doc__ 
-        cls_name = cls.__name__       
-        print (f'\n#### CLASS {cls_name}')
-        # print ('```')
-        print(f"\n{class_docstring}")
-
-        firstMethod = True
-        for name, method in cls.__dict__.items():
-            if callable(method) and not name.startswith("__") and hasattr(method, "__doc__"):
-                if firstMethod:
-                    print (f"-- Methods --\n")
-                    firstMethod = False
-                m_docstring = method.__doc__
-                print(f"\t.{name}():{m_docstring}\n")
-        # print ('```')
                 
-
 if __name__ == "__main__":
     main()
     # printDocstring()
