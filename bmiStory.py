@@ -662,14 +662,6 @@ class Story:
         print(f'... {desc}')
 
 
-def getTDEEEstInfo(p, act):
-    bmr = Inbody.estimatedBMR(p.weight, p.bodyFat)
-    tdee = Inbody.estimatedTDEE(bmr, act)
-    s = f'依據{p._name}的體重、體脂肪及活動量({act})，' \
-        f' 預估BMR基礎代謝🔥{bmr:,.0f}大卡;' \
-        f' TDEE 每日熱量總耗🔥{tdee:,.0f}大卡'
-    return s
-
 def main():
     Story.cover('>>> FROM OVERWEIGHT TO OVERACHIVER <<< ')
 

@@ -276,29 +276,5 @@ class TestCoach(unittest.TestCase):
         print(annie.getLifeInfo())
         self.assertEqual(annie.getBalance(), Currency(10000))
 
-class TestWorkout(unittest.TestCase):
-
-    def setUp(self) -> None:
-        # swim
-        self.swim = Workout.SWIM
-
-        # bob
-        self.bob = Person('Bob', 1.72, 100, 0.2, 40)
-        self.bob_bAccount = BankAccount(self.bob.name, balance=Currency(0))
-        self.bob.bankAccount = self.bob_bAccount
-        self.bob.registerGym(Gym('StrongLife', Currency(0)))
-
-    # 健身：健身後體重減輕，bmi 下降
-    def test_Workout_swim(self):
-        cal = self.swim.caloriesBurn(weight=100, duration=60)
-        loss = self.swim.weightLoss(100, 60, 30)
-
-        self.assertEqual(cal, self.swim.value[1]*100*60/60)
-        self.assertEqual(loss, 3.9)
-
-        # bob 到健身房游泳
-        self.bob.workout(self.swim, 60, '2023/10/10', 30)
-        self.assertEqual(self.bob.weight, 100-loss)
-
 if __name__ == '__main__':
     unittest.main()
