@@ -144,8 +144,7 @@ def main():
         print(p)
     Story.sectionEnd()
     Story.chapterEnd()
-
-            
+      
 if __name__ == "__main__":
     main()
     # printDocstring()
