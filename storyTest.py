@@ -239,42 +239,5 @@ class TestCompanySupport(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             self.successTech.subsidize(annie, Currency(500))
 
-
-class TestCoach(unittest.TestCase):
-    # 教練：教練的健康標準比較高
-
-    def setUp(self) -> None:
-        self.nick = Person('Nick', 1.72, 70)
-        self.charlie = Person('Charlie', 1.72, 70, bodyFat=0.1)    # BMI: 23.66
-        self.charlie = Coach(self.charlie, '舉重')     # charlie is a Coach
-
-    def test_coach_same_inbody(self):
-        self.assertEqual(self.nick.inbody, Inbody.FIT)  # BMI: 23.66
-        self.assertEqual(self.charlie.inbody, Inbody.OVER_WEIGHTED)
-
-    def test_bodyFat(self):
-        ''' low BMI, but high body fat
-            BMI: 20.28 ok but high body fat'''
-
-        self.charlie.updateInbody(weight=60, bodyFat=0.25)
-        self.assertEqual(self.charlie.inbody, Inbody.OVER_BODY_FAT)
-
-    def test_fit(self):
-        ''' a fit coach '''
-        self.charlie.updateInbody(weight=60, bodyFat=0.15)
-        self.assertEqual(self.charlie.inbody, Inbody.FIT)
-
-    # @unittest.skip
-    def test_original_attr(self):
-        ''' if a person have other attribute (like group) 
-            we should add back these attribute to coach
-        '''
-        annie = Person('Annie', 1.6, 45, 0.13)
-        account = BankAccount('Annie', Currency(10000))
-        annie.bankAccount = account
-        annie = Coach(annie, 'running')
-        print(annie.getLifeInfo())
-        self.assertEqual(annie.getBalance(), Currency(10000))
-
 if __name__ == '__main__':
     unittest.main()

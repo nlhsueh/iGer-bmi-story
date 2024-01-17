@@ -580,50 +580,6 @@ class Gym(Company, HGroup):
     def __str__(self):
         return '🏋️‍♂️' + super().__str__()
 
-
-class Coach(Person):
-    """ Coach 是一個 Person, 有額外的健身專長，對體檢的標準也不同 
-    Attributes
-        expertise : str
-            教練的專長
-    """
-    def __init__(self, p: Person, expertise: str):
-        ''' 
-        由既有的一個 Person 物件生成一個教練物件
-
-        因為 person 可能有其他的屬性如薪水，公司等，我們必須將之複製過來
-        '''
-
-        super().__init__(p.name, p.height, p.weight, bodyFat=p.bodyFat, age=p.age)
-        self._expertise = expertise
-
-        # 屬性複製
-        for key, value in p.__dict__.items():
-            if key not in ('_name', '_height', '_weight', '_bodyFat', '_age'):
-                setattr(self, key, value)
-
-        self._setInbody()
-
-    def _setInbody(self):
-        ''' 覆蓋 person 中設定 inbody 的值，因為教練的健康要求比較高 
-
-        Exception
-            必須設定體脂肪，才能設定 inbody; 若無，會拋出例外
-        '''
-
-        if (self._bodyFat is None):
-            raise Exception("教練必須設定體脂肪")
-        if self._bodyFat > 0.15:
-            self._inbody = Inbody.OVER_BODY_FAT
-        else:
-            if (self.BMI < 19):
-                self._inbody = Inbody.TOO_LIGHT
-            elif (self.BMI > 22):
-                self._inbody = Inbody.OVER_WEIGHTED
-            else:
-                self._inbody = Inbody.FIT
-
-
 class Story:
     """ 定義故事每章節分段及裝飾的形式
     """
@@ -696,14 +652,6 @@ def main():
 
     Story.note('Charlie成了教練，在一家健身中心工作')
     Story.note('他的身高變高，體脂肪和體重還下降了')
-    charlie = Coach(charlie, expertise='舉重')
-    charlie.updateInbody(height=charlie.height + 0.05,
-                         weight=charlie.weight-5,
-                         bodyFat=charlie.bodyFat-0.03)
-    moveX = Company('MoveX', Currency(100000))
-    charlie.workFor(moveX)
-
-    print(charlie)
 
     Story.note('Bob 有點宅，也不太不健康')
     bob.updateInbody(weight=bob.weight+20,
