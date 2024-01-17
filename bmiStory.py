@@ -712,20 +712,6 @@ def getTDEEEstInfo(p, act):
         f' TDEE 每日熱量總耗🔥{tdee:,.0f}大卡'
     return s
 
-
-def getWeightLossEstInfo(p, act, dailyCalorie, days):
-    bmr = Inbody.estimatedBMR(p.weight, p.bodyFat)
-    tdee = Inbody.estimatedTDEE(bmr, act)
-    s = f'{p._name}每天的熱量攝取🔥{dailyCalorie}大卡,' \
-        f' BMR基礎代謝🔥{bmr:,.0f}大卡; 活動習慣:{act};' \
-        f' TDEE 每日熱量總耗🔥{tdee:,.0f}大卡'
-    weightLoss = Inbody.estimatedWeightLoss(tdee, dailyCalorie, days)
-    s += f'\n預估{days}天後減重 {weightLoss}kg'
-    p.updateInbody(weight=p.weight - weightLoss)
-    s += f'\n{p.getInbodyInfo()}'
-    return s
-
-
 def main():
     Story.cover('>>> FROM OVERWEIGHT TO OVERACHIVER <<< ')
 
@@ -853,65 +839,6 @@ def main():
     print(bob.getInbodyInfo())
 
     Story.chapterEnd()
-
-    # Chapter VI
-    Story.chapterHead('減重計畫')
-
-    Story.sectionHead('現況評估')
-    Story.note('Alice 擔任 Bob 的營養師')
-    Story.note('還沒有減重計劃前 Bob 的狀況')
-    Story.note('他的活動層級被評斷為坐立，這也代表他每天消耗的熱量很低')
-
-    act = ActivityLevel.SEDENTARY
-    print(getTDEEEstInfo(bob, act))
-
-    Story.note('他每天攝取的熱量大約 3000 大卡，如果這樣持續 30 天')
-    dailyCalorie, days = 3000, 30
-    Story.note('他的減重是負的！！（也就是體重持續增加)')
-    print(getWeightLossEstInfo(bob,
-                               act,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第一階段減重')
-    Story.note('活動力提升一點，少吃一點')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    dailyCalorie, days = 2500, 30
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.MODERATELY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第二階段減重')
-    Story.note('活動力再提升，吃得更少，持續更久')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    dailyCalorie, days = 2000, 100
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.VERY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    Story.sectionHead('第三階段減重-- 保持')
-    Story.note('先看看目前的體重下，TDEE是多少')
-    print(getTDEEEstInfo(bob, act))
-
-    Story.note('活動力再提升，吃得和消耗的差不多，體重就可以維持')
-    act = ActivityLevel.MODERATELY_ACTIVE
-    bmr = Inbody.estimatedBMR(bob.weight, bob.bodyFat)
-    tdee = Inbody.estimatedTDEE(bmr, act)
-    dailyCalorie, days = tdee, 100
-    print(getWeightLossEstInfo(bob,
-                               ActivityLevel.MODERATELY_ACTIVE,
-                               dailyCalorie,
-                               days))
-
-    # Chapter VII
-    Story.chapterHead('發達之路')
-    successTech.earnMoney(Currency(100000000))
-    successTech.paySalary(bob, Currency(500000))
-    successTech.show()
-    print(bob.getLifeInfo())
-    print(bob.getInbodyInfo())
 
 def printDocstring():
     cls_list = [Person, Currency, BankAccount, Student, HGroup, HighShoolClub, Company, Gym, Coach, WorkoutRec]

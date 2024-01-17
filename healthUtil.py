@@ -102,16 +102,3 @@ class Inbody(Enum):
         TEF = (BMR + TEA) * 0.1  # 估算
         TDEE = BMR + TEA + TEF
         return round(TDEE)
-
-    def estimatedWeightLoss(TDEE, DCI, nDays):
-        ''' 
-        @param TDEE (Total Daily Energy Expenditure 每日熱量總耗)
-        @param DCI daily calorie intake 每日熱量攝取
-        @param nDays 天數
-
-        Calorie deficit (CD) 熱量赤字 = TDEE - DCI
-        estimated weight loss = CD / 7700 # calorie deficit 每 7700 大卡可以降低 1kg
-        '''
-        CD = TDEE - DCI
-        estimatedWeightLoss = round(CD/7700, 2) * nDays
-        return round(estimatedWeightLoss, 1)

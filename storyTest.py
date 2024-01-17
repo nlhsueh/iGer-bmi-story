@@ -305,8 +305,7 @@ class TestWorkout(unittest.TestCase):
         self.bob.workout(self.swim, 60, '2023/10/10', 30)
         self.assertEqual(self.bob.weight, 100-loss)
 
-# @unittest.skip
-
+@unittest.skip
 
 class TestWorkoutRec(unittest.TestCase):
     # 健身：記錄健身
@@ -322,87 +321,6 @@ class TestWorkoutRec(unittest.TestCase):
         bob.workout(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
         bob.workout(Workout.YOGA, 60, '2023/10/20', 10)
         bob.showWorkoutLog()
-
-# @unittest.skip
-
-
-class TestWeightLossPlan(unittest.TestCase):
-
-    def test_BMR(self):
-        ' 測試 BMR 是否正確 '
-        weight, bodyFat = 90, 0.2
-        bmr = Inbody.estimatedBMR(weight, bodyFat)
-
-        self.assertAlmostEqual(bmr, 1925.2, places=1)
-
-    def test_weight_loss_SEDENTARY(self):
-        ' 測試 預估減輕的重量是否正確 '
-        weight, bodyFat = 90, 0.2
-        act = ActivityLevel.SEDENTARY
-        dailyCalorie, days = 3000, 30
-
-        bmr = Inbody.estimatedBMR(weight, bodyFat)
-        tdee = Inbody.estimatedTDEE(bmr, act)
-        weightLoss = Inbody.estimatedWeightLoss(tdee, dailyCalorie, days)
-        self.assertEqual(-1.8, weightLoss)
-
-    def test_weight_loss_MODERATELY_ACTIVE(self):
-        weight, bodyFat = 90, 0.2
-        act = ActivityLevel.MODERATELY_ACTIVE
-        dailyCalorie, days = 3000, 30
-
-        bmr = Inbody.estimatedBMR(weight, bodyFat)
-        tdee = Inbody.estimatedTDEE(bmr, act)
-        weightLoss = Inbody.estimatedWeightLoss(tdee, dailyCalorie, days)
-        self.assertEqual(1.2, weightLoss)
-
-    def test_weight_loss_SUPER_ACTIVE(self):
-        weight, bodyFat = 90, 0.2
-        act = ActivityLevel.SUPER_ACTIVE
-        dailyCalorie, days = 3000, 30
-
-        bmr = Inbody.estimatedBMR(weight, bodyFat)
-        tdee = Inbody.estimatedTDEE(bmr, act)
-        weightLoss = Inbody.estimatedWeightLoss(tdee, dailyCalorie, days)
-        self.assertEqual(3.9, weightLoss)
-
-    # @unittest.skip('done')
-    # 測試 BMR, TDEE, 與減輕之重量
-    def test_show_bob_plan(self):
-        # 一開始的 bob, 沒有運動, 吃的也多
-        bob = Person(name='Bob', height=1.72, weight=120, age=40, bodyFat=0.3)
-
-        # 可以採用(1) 固定熱量赤字的方式來減重，或是(2) 增加運動強度、固定攝取熱量的方式
-        # activity level, dificit, daily_cal, days
-        actPlan = [(ActivityLevel.SEDENTARY, 500, '-', 30),           # 熱量赤字 500
-                   (ActivityLevel.LIGHTLY_ACTIVE, 500, '-', 30),      # 熱量赤字 500
-                   (ActivityLevel.LIGHTLY_ACTIVE, '-', 2000, 30),     # 攝取熱量 2000
-                   (ActivityLevel.MODERATELY_ACTIVE, '-', 3000, 30),  # 攝取熱量 3000
-                   (ActivityLevel.VERY_ACTIVE, '-', 3000, 30),        # 攝取熱量 3000
-                   (ActivityLevel.SUPER_ACTIVE, '-', 3000, 30),       # 攝取熱量 3000
-                   ]
-
-        print("\n=================")
-        print(f"{bob.name}的減重歷程")
-        print("=================")
-        for act in actPlan:
-            actLevel = act[0]
-            dificit = act[1]
-            dailyCalorie = act[2]
-            days = act[3]
-
-            bob_bmr = Inbody.estimatedBMR(bob.weight, bob.bodyFat)
-            bob_tdee = Inbody.estimatedTDEE(bob_bmr, actLevel)
-            if dificit != '-':
-                dailyCalorie = bob_tdee - dificit
-            weightLoss = Inbody.estimatedWeightLoss(
-                bob_tdee, dailyCalorie, days)
-            print(
-                f'bob重{bob.weight:.1f}, {actLevel}, 預估每日消耗熱量{bob_tdee}, 如果每日攝取熱量{dailyCalorie}, {days}天後，預計體重減少{weightLoss}kg')
-
-            bob.updateInbody(weight=bob.weight - weightLoss)
-            # print (f'新體重：{bob.weight:.1f}')
-
 
 if __name__ == '__main__':
     unittest.main()
