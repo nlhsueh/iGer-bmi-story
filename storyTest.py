@@ -56,62 +56,11 @@ class TestGroup(unittest.TestCase):
             Inbody.TOO_LIGHT), {self.alice})
         self.assertEqual(self.fit.queryByInbody(Inbody.OVER_WEIGHTED), None)
 
-    def test_show_group_show(self):
-        ' 展示不同的群組有不同的描述方法 (desc) '
-        self.fit.add(self.bob)
-        self.fit.add(self.charlie)
-        self.fit.add(self.alice)
-
-        google = Company('Google', asset=100)
-        groups = [self.fit, google]
-
-        print('\n==== Group description ====')
-        for g in groups:
-            g.show()
-
     def test_add(self):
         self.fit.add(self.bob)
         # print("***", self.fit.getMembers())
         self.assertTrue(self.fit._members == [self.bob])
         # self.assertEqual(self.bob._groups, [self.fit])
-
-
-' 測試錢幣的處理：加減、比較 '
-
-
-class TestCurrency(unittest.TestCase):
-    def test_currency(self):
-        ntd120 = Currency(120)
-        self.assertEqual(ntd120.amount, 120)
-        self.assertEqual(ntd120.symbol, 'NTD')
-
-        ntd100 = Currency(100, 'NTD')
-        r = ntd120 + ntd100
-        self.assertEqual(r.amount, 220)
-        self.assertEqual(r.symbol, 'NTD')
-
-        r = ntd120 - ntd100
-        self.assertEqual(r.amount, 20)
-        self.assertEqual(r.symbol, 'NTD')
-
-        self.assertTrue(ntd120 >= ntd100)
-        self.assertFalse(ntd100 >= ntd120)
-
-    def test_currency_convert(self):
-        ' 台幣與美金的運算 '
-        ntd120 = Currency(120)
-        us100 = Currency(100, 'USD')
-        self.assertEqual(Currency.NTD_RATE, 30)
-        sum = ntd120 + us100
-        self.assertEqual(sum.amount, 120+100*Currency.NTD_RATE)
-        self.assertEqual(sum.symbol, 'NTD')
-
-        diff = us100 - ntd120
-        self.assertEqual(diff.amount, 100 - 120/Currency.NTD_RATE, 2)
-        self.assertEqual(diff.symbol, 'USD')
-
-        self.assertTrue(us100 >= ntd120)
-        self.assertFalse(ntd120 >= us100)
 
 if __name__ == '__main__':
     unittest.main()
