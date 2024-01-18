@@ -496,23 +496,6 @@ class Company:
 
         return True if person in self._employees else False
 
-    def subsidize(self, person: Person, amount):
-        ''' 補助員工參與健身等活動 
-
-        - 補助前先檢查是否為公司員工
-        - 錢會直接匯到該員工的帳戶
-        - 公司的資產會因此減少
-
-        Exception:
-            受補助的人並不是公司員工
-        '''
-
-        if (self.isHired(person)):
-            person.bankAccount.deposit(amount)
-            self._asset = self._asset - amount
-        else:
-            raise Exception("Can't subsidize a unempolyed person")
-
     @property
     def asset(self):
         return self._asset
@@ -698,27 +681,6 @@ def main():
         print(noEnoughFund)
     Story.note('Bob 參加了健身房')
     print(bob.getLifeInfo())
-
-    Story.sectionHead('Jack 報名了健身房，但錢不夠')
-    jack = Person('Jack', 1.72, 100)
-    jack.bankAccount = BankAccount(jack.name, balance=Currency(10))
-    successTech.hire(jack)
-    successTech.paySalary(jack, Currency(10))
-    try:
-        jack.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    finally:
-        print(jack.getBalanceInfo())
-
-    Story.sectionHead('公司補助健身'+str(Currency(500)))
-    successTech.subsidize(jack, Currency(500))
-    try:
-        jack.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    print('Jack 也加入健身了')
-    print(jack.getLifeInfo())
 
     # Chapter V
     Story.chapterHead('開始健身')

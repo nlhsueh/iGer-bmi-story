@@ -209,35 +209,5 @@ class TestCompanyGym(unittest.TestCase):
         self.assertEqual(self.strongLife.avgBMI(), bmi)
         print(self.bob.getInbodyInfo())
 
-
-class TestCompanySupport(unittest.TestCase):
-    # 補助：只有員工才能補助; 補助後公司資產減少，員工帳戶增加
-
-    def setUp(self) -> None:
-        # successTech
-        self.successTech = Company('Success Tech.', Currency(100000))
-
-        # bob
-        self.bob = Person('Bob', 1.72, 100, 0.2, 40)
-        self.bob_bAccount = BankAccount(self.bob.name, balance=Currency(10000))
-        self.bob.bankAccount = self.bob_bAccount
-
-        # gym
-        self.strongLife = Gym('Strong Life', Currency(100000), Currency(1000))
-
-    def test_subsidize_balance_asset(self):
-        self.bob.workFor(self.successTech)
-        self.successTech.subsidize(self.bob, Currency(500))
-        # 受補助的錢會變多
-        self.assertEqual(self.bob.getBalance(), Currency(10000+500))
-        # 公司資產錢會變少
-        self.assertEqual(self.successTech.asset, Currency(100000-500))
-
-    def test_subsidize_employee_only(self):
-        # annie 不是員工
-        annie = Person('Annie', 1.62, 55)
-        with self.assertRaises(Exception) as e:
-            self.successTech.subsidize(annie, Currency(500))
-
 if __name__ == '__main__':
     unittest.main()
