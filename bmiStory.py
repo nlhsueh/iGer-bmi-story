@@ -145,7 +145,6 @@ class Person:
         self._bodyFat = bodyFat
         self._age = age
         self.__bankAccount = None
-        self._gym = None
         self._groups = []
         self._company = None
         self._salary = None
@@ -252,40 +251,9 @@ class Person:
 
         print(f"Balance of 👤{self._name}: {self.getBalance()}")
 
-    def registerGym(self, gym):
-        ''' 報名健身房; 同時呼叫 gym.add() 建立雙邊關係 '''
-
-        if gym != self._gym:
-            self._gym = gym
-            gym.add(self)
-
-    def workout(self, workout, duration=60, date=None, times=60):
-        ''' 健身後可以減重，進而變更 BMI, 同時產生健身紀錄
-
-        - 必須先檢查是否已經加入健身房，若無則拋出例外
-        - 呼叫 workout 物件來取得可減重的重量
-        - 呼叫 setInbody 來重設 inbody 數值
-
-        Parameters:
-            duration(int) 健身時長，單位分鐘
-            date(str) 健身日期
-            times(int) 從健身日期起的連續的次數
-
-        Return: None
-
-        Exception: 
-            Exception(未加入健身房)
-        '''
-
-        if self._gym is None:
-            raise Exception("還沒有加入任何健身房")
-
-        # 減重
-        loss = workout.weightLoss(self._weight, duration, times)
-        self.updateInbody(weight=self._weight - loss)
 
     def getLifeInfo(self) -> str:
-        ''' 回傳此人的一般生活資訊, 包含參與的社團，公司，健身房與帳戶存款 '''
+        ''' 回傳此人的一般生活資訊, 包含參與的社團，公司與帳戶存款 '''
 
         if len(self._groups) != 0:
             g = f"參與{','.join(list(map(str, self._groups)))}等群組"
@@ -297,16 +265,12 @@ class Person:
                 w += '(薪水{self._salary}k)'
         else:
             w = '目前沒有工作'
-        if self._gym is not None:
-            gym = f"在{self._gym.title}健身"
-        else:
-            gym = '目前沒有參加健身房'
         if self.__bankAccount is not None:
             balance = f"有{self.__bankAccount.balance}存款"
         else:
             balance = '目前沒有銀行帳戶'
 
-        return f'👤{self._name}: ' + ';'.join([g, w, gym, balance])
+        return f'👤{self._name}: ' + ';'.join([g, w, balance])
 
     def __str__(self):
         ''' 回傳 inbody 和 life 相關的資訊 '''
@@ -507,62 +471,6 @@ class Company:
         content = f'🏢{self._title}是合法登記的公司，目前資產有{self._asset}'
         print(content)
 
-
-class Gym(Company, HGroup):
-    """健身房
-
-    - 健身房是一個公司，也是一個提倡健康的群組。
-    - 多重繼承 Company 與 HGroup 
-    """
-    def __init__(self, title, asset, memberFee=Currency(0)):
-        Company.__init__(self, title, asset)
-        HGroup.__init__(self, title)
-        self._memberFee = memberFee
-
-    def add(self, person):
-        ''' 加入群組
-
-        覆蓋 HGroup.add() 的功能：加入會員須要扣款，健身房資本增加，會員帳戶餘款減少 
-        '''
-
-        if person.bankAccount is None:
-            raise Exception(f'{person.name} does not apply bank account')
-        enoughBalance = person.bankAccount.balance >= self._memberFee
-        if not enoughBalance:
-            raise Exception(
-                f"{person.name} does not have enough funds to join.")
-        if not self.isMember(person):
-            person.bankAccount.withdraw(self._memberFee)
-            self._asset = self._asset + self._memberFee
-            super().add(person) # HGroup.add()
-
-    @property
-    def memberFee(self):
-        return self._memberFee
-
-    @memberFee.setter
-    def memberFee(self, newFee):
-        ''' 如果會費調漲高過 500, 會產生例外 '''
-
-        if newFee >= self._memberFee + Currency(500):
-            raise Exception("Too high member fee")
-        self._memberFee = newFee
-
-    def getGymInfo(self):
-        ''' 回傳健身房基本資訊，包含資產與會費'''
-
-        return f'🏋️‍♂️{self._title}: asset={self._asset}; fee={self._memberFee}'
-
-    def show(self):
-        ''' 印出會員數量，描述健身房狀態'''
-
-        c = len(self._members)
-        print(f'目前有{c}個會員，我們提供多項的健身活動、專業的設備'
-              f'，以及舒適的環境。')
-
-    def __str__(self):
-        return '🏋️‍♂️' + super().__str__()
-
 class Story:
     """ 定義故事每章節分段及裝飾的形式
     """
@@ -663,39 +571,6 @@ def main():
     successTech.earnMoney(Currency(1500000))
     print(bob.getBalanceInfo())
     successTech.show()
-
-    Story.chapterEnd()
-
-    # Chapter IV
-    Story.chapterHead('公司的補助')
-
-    Story.note('雖然業績不錯，但 Bob 的身體不好')
-    Story.note('公司鼓勵 Bob 和其他同仁大家都去健身房運動')
-    strongLife = Gym('StrongLife',
-                     asset=Currency(200000),
-                     memberFee=Currency(600))
-    print(strongLife.getGymInfo())
-    try:
-        bob.registerGym(strongLife)
-    except Exception as noEnoughFund:
-        print(noEnoughFund)
-    Story.note('Bob 參加了健身房')
-    print(bob.getLifeInfo())
-
-    # Chapter V
-    Story.chapterHead('開始健身')
-    Story.note('健身前的 Inbody！')
-    print(bob.getInbodyInfo())
-
-    Story.note('Charlie 轉職到 StrongLife, 擔任 Bob 的教練')
-    bob.workout(Workout.FLYWHEEL, 60, '2023/10/03', 4)
-    bob.workout(Workout.AEROBIC_EX, 60, '2023/10/10', 1)
-    bob.workout(Workout.SWIM, 60, '2023/10/11', 3)
-    bob.workout(Workout.WEIGHT_TRAIN, 60, '2023/10/14', 10)
-    bob.workout(Workout.YOGA, 60, '2023/10/20', 10)
-
-    Story.note('健身後體重降低了！')
-    print(bob.getInbodyInfo())
 
     Story.chapterEnd()
                 
