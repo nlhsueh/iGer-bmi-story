@@ -113,39 +113,5 @@ class TestCurrency(unittest.TestCase):
         self.assertTrue(us100 >= ntd120)
         self.assertFalse(ntd120 >= us100)
 
-
-class TestAccount(unittest.TestCase):
-    def setUp(self) -> None:
-        # bob
-        self.bob = Person('Bob', 1.72, 100, 0.2, 40)
-        self.bob_bAccount = BankAccount(self.bob.name, balance=Currency(10000))
-        self.bob.bankAccount = self.bob_bAccount
-
-    def test_currency(self):
-        x = Currency(100)
-        if x is None:
-            print(x)
-
-    def test_deposit_ntd(self):
-        self.bob_bAccount.deposit(Currency(10000))        # 存入台幣 10000
-        self.assertEqual(self.bob.getBalance(), Currency(20000))
-
-    def test_deposit_usd(self):
-        self.bob_bAccount.deposit(Currency(100, "USD"))   # 存入美金
-        newB = 10000 + 100 * Currency.NTD_RATE
-        self.assertEqual(self.bob.getBalance(), Currency(newB))
-
-    def test_withdraw_usd(self):
-        self.bob_bAccount.withdraw(Currency(100, "USD"))  # 領出美金
-        newB = 10000 - 100 * Currency.NTD_RATE
-        self.assertEqual(self.bob.getBalance(), Currency(newB))
-
-    def test_withdraw_insufficient(self):
-        with self.assertRaises(Exception) as e:
-            self.bob_bAccount.withdraw(Currency(12000))
-        self.assertTrue(
-            '餘額不足' in str(e.exception))
-        self.assertEqual(self.bob_bAccount.balance, Currency(10000))  # 餘款不變
-
 if __name__ == '__main__':
     unittest.main()

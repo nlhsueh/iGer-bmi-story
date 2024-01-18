@@ -72,43 +72,6 @@ class Currency:
     def __str__(self):
         return f'{self.symbol}{self.amount:,.0f}'
 
-'''
-    BankAccount 封裝一個人的銀行帳戶資訊與功能。
-    可能存款提款等。
-    金錢的單位是 Currency。
-'''
-class BankAccount:
-    """銀行帳戶
-
-    Attributes:
-    ----------
-    title: str 
-        開戶者的名稱
-    balance : Currency
-        存款
-    """
-    def __init__(self, title, balance: Currency):
-        self._title = title
-        self._balance = balance
-
-    def deposit(self, amount: Currency):
-        ''' 存款 '''
-        self._balance = self._balance + amount
-
-    def withdraw(self, amount: Currency):
-        ''' 提款 '''
-        if self._balance >= amount:
-            self._balance -= amount
-        else:
-            raise Exception(f"餘額不足")
-
-    @property
-    def balance(self):
-        return self._balance
-
-    def __str__(self):
-        return f"{self._title}的帳戶目前有 {self._balance}"
-
 
 class Person:
     """ 封裝一個人的資訊。
@@ -129,10 +92,6 @@ class Person:
         身體質量狀態, Inbody.OVERWEIGHTED, ... 等    
     age : int
         年齡
-    bankAccount : BankAccount
-        銀行帳號，必須透過 apply() 來設定; 初始為 None
-    gym : Gym
-        所參與的健身房; 初始為 None
     group : HGroup
         所參與的健康社群; 初始為 []        
     """
@@ -144,7 +103,6 @@ class Person:
         self._weight = weight
         self._bodyFat = bodyFat
         self._age = age
-        self.__bankAccount = None
         self._groups = []
         self._company = None
         self._salary = None
@@ -224,36 +182,9 @@ class Person:
             self._company = company
             company.hire(self)
 
-    def getBalance(self) -> Currency:
-        ''' 回傳所連結的銀行帳戶的餘款 '''
-
-        return self.__bankAccount.balance
-
-    def getBalanceInfo(self) -> str:
-        ''' 回傳帳務資訊的字串 '''
-
-        return f'👤{self._name}存款：{self.__bankAccount.balance}'
-
-    @property
-    def bankAccount(self) -> BankAccount:
-        return self.__bankAccount
-
-    @bankAccount.setter
-    def bankAccount(self, bankAccount) -> None:
-        ''' 連接帳戶，當帳戶名稱與本人名字不同時則無法成功 '''
-
-        if bankAccount._title != self._name:
-            raise Exception('Error bank account setting')
-        self.__bankAccount = bankAccount
-
-    def showBalance(self) -> None:
-        ''' 印出姓名與帳戶存款 '''
-
-        print(f"Balance of 👤{self._name}: {self.getBalance()}")
-
 
     def getLifeInfo(self) -> str:
-        ''' 回傳此人的一般生活資訊, 包含參與的社團，公司與帳戶存款 '''
+        ''' 回傳此人的一般生活資訊, 包含參與的社團，公司 '''
 
         if len(self._groups) != 0:
             g = f"參與{','.join(list(map(str, self._groups)))}等群組"
@@ -265,12 +196,8 @@ class Person:
                 w += '(薪水{self._salary}k)'
         else:
             w = '目前沒有工作'
-        if self.__bankAccount is not None:
-            balance = f"有{self.__bankAccount.balance}存款"
-        else:
-            balance = '目前沒有銀行帳戶'
 
-        return f'👤{self._name}: ' + ';'.join([g, w, balance])
+        return f'👤{self._name}: ' + ';'.join([g, w])
 
     def __str__(self):
         ''' 回傳 inbody 和 life 相關的資訊 '''
@@ -548,29 +475,6 @@ def main():
     bob.updateInbody(weight=bob.weight+20,
                      bodyFat=bob.bodyFat*1.3)
     print(bob)
-
-    # chapter III
-    Story.chapterHead('工作賺錢')
-
-    Story.sectionHead('Bob開了銀行帳戶，雖然錢不多')
-    bob.bankAccount = BankAccount(title='Bob', balance=Currency(10000))
-    print(bob.getBalanceInfo())
-    Story.note('也把多年的美金存到戶頭')
-    bob.bankAccount.deposit(Currency(10000, "USD"))
-    print(bob.getBalanceInfo())
-
-    Story.sectionHead('成功的找到工作')
-    successTech = Company(title='成科股份有限公司', asset=Currency(1000000))
-    successTech.show()
-    successTech.hire(bob)
-    # bob.workFor(successTech)
-    Story.note(f'薪水 {Currency(50000)}')
-    print(bob.getLifeInfo())
-    successTech.paySalary(bob, Currency(50000, 'NTD'))
-    Story.note('公司最近賺了不少錢')
-    successTech.earnMoney(Currency(1500000))
-    print(bob.getBalanceInfo())
-    successTech.show()
 
     Story.chapterEnd()
                 
